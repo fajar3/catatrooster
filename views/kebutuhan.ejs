@@ -1,0 +1,47 @@
+<h1>Daftar Kebutuhan Pakan</h1>
+
+    <!-- Form untuk menambah kebutuhan baru -->
+    <form action="/kebutuhan" method="POST" class="form-add">
+        <input type="text" name="nama" placeholder="Nama Pakan" required>
+        <input type="number" name="harga" placeholder="Harga (Rp)" required>
+        <button type="submit">Tambah Kebutuhan</button>
+    </form>
+
+    <!-- Tabel untuk menampilkan daftar kebutuhan -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Pakan</th>
+                    <th>Harga (Rp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% kebutuhan.forEach(k => { %>
+                <tr>
+                    <td><%= k.nama %></td>
+                    <td>Rp <%= k.harga.toLocaleString() %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tombol aksi di bagian bawah -->
+    <div class="page-actions">
+        <a href="/add" class="btn"><i class="fas fa-plus-circle"></i> Tambah Pengeluaran</a>
+        <a href="/" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
+    </div>
+
+
+<script>
+    // Mobile menu toggle (jika diperlukan)
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    }
+</script>

@@ -1,0 +1,35 @@
+<h1>Penjualan Ayam</h1>
+
+    <!-- Form untuk mencatat penjualan baru -->
+    <form action="/pemasukan" method="POST" class="form-add">
+        <input type="number" name="jumlah" placeholder="Jumlah Ayam Terjual" required>
+        <input type="number" name="harga" placeholder="Harga per Ekor (Rp)" required>
+        <button type="submit">Catat Penjualan</button>
+    </form>
+
+    <!-- Tabel untuk menampilkan daftar penjualan -->
+    <div class="table-container">
+        <div class="table-header">
+            <h2 class="table-title">Daftar Penjualan</h2>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Jumlah</th>
+                    <th>Harga/Ekor</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% pemasukan.forEach(item => { %>
+                <tr>
+                    <td><%= item.tanggal %></td>
+                    <td><%= item.jumlah %></td>
+                    <td>Rp <%= item.harga.toLocaleString() %></td>
+                    <td>Rp <%= item.total.toLocaleString() %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>

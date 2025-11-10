@@ -1,0 +1,52 @@
+
+    <h1>Daftar Ayam (Aset)</h1>
+
+    <!-- Form untuk menambah data ayam -->
+    <form action="/ayam" method="POST" class="form-add">
+        <input type="number" name="jumlah" placeholder="Jumlah Anak Ayam" required>
+        <input type="number" name="harga" placeholder="Harga Total (Rp)" required>
+        <button type="submit">Tambah Ayam</button>
+    </form>
+
+    <!-- Kartu untuk Ringkasan Keuangan -->
+    <div class="financial-summary">
+        <h3>Ringkasan Keuangan</h3>
+        <ul>
+            <li>
+                <span class="label">Total Pengeluaran:</span>
+                <span class="value">Rp <%= totalPengeluaran.toLocaleString() %></span>
+            </li>
+            <li>
+                <span class="label">Total Pemasukan:</span>
+                <span class="value">Rp <%= totalPemasukan.toLocaleString() %></span>
+            </li>
+            <li>
+                <span class="label">Total Keuangan:</span>
+                <span class="value">Rp <%= totalKeuangan.toLocaleString() %></span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tabel untuk menampilkan riwayat penambahan ayam -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Jumlah</th>
+                    <th>Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% ayam.forEach(item=>{ %>
+                <tr>
+                    <td><%= item.tanggal %></td>
+                    <td><%= item.jumlah %></td>
+                    <td>Rp <%= item.harga.toLocaleString() %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+

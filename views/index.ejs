@@ -1,0 +1,219 @@
+
+    <div class="stats">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Total Minggu Ini</h3>
+                <div class="card-icon purple">
+                    <i class="fas fa-calendar-week"></i>
+                </div>
+            </div>
+            <div class="card-value">Rp <%= totalMinggu.toLocaleString() %></div>
+            <div class="card-change positive">+12.5% dari minggu lalu</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Total Bulan Ini</h3>
+                <div class="card-icon blue">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+            <div class="card-value">Rp <%= totalBulan.toLocaleString() %></div>
+            <div class="card-change positive">+8.2% dari bulan lalu</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Total Semua Pengeluaran</h3>
+                <div class="card-icon pink">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+            </div>
+            <div class="card-value">Rp <%= totalAll.toLocaleString() %></div>
+            <div class="card-change negative">+3.1% dari periode lalu</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Total Pemasukan</h3>
+                <div class="card-icon purple">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+            <div class="card-value">Rp <%= totalPemasukan.toLocaleString() %></div>
+            <div class="card-change positive">+15.3% dari bulan lalu</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Total Keuangan</h3>
+                <div class="card-icon blue">
+                    <i class="fas fa-wallet"></i>
+                </div>
+            </div>
+            <div class="card-value">Rp <%= totalKeuangan.toLocaleString() %></div>
+            <div class="card-change positive">+10.7% dari bulan lalu</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Total Ayam</h3>
+                <div class="card-icon pink">
+                    <i class="fas fa-egg"></i>
+                </div>
+            </div>
+            <div class="card-value"><%= totalAyam %> Ekor</div>
+            <div class="card-change positive">+5.2% dari bulan lalu</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">
+            <h2 class="chart-title">Pengeluaran Pakan Ayam</h2>
+            <div class="chart-options">
+                <div class="chart-option active">Mingguan</div>
+                <div class="chart-option">Bulanan</div>
+                <div class="chart-option">Tahunan</div>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="chartPengeluaran"></canvas>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h2 class="table-title">Riwayat Pengeluaran</h2>
+            <div class="table-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari pengeluaran...">
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Jumlah</th>
+                    <th>Harga</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% pengeluaran.forEach(item => { %>
+                    <tr>
+                        <td><%= item.tanggal %></td>
+                        <td><%= item.nama %></td>
+                        <td><%= item.jumlah %></td>
+                        <td>Rp <%= item.harga.toLocaleString() %></td>
+                        <td><span class="status active">Selesai</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button><i class="fas fa-eye"></i></button>
+                                <button><i class="fas fa-edit"></i></button>
+                                <button><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        
+        <div class="pagination">
+            <% if (page > 1) { %><a href="/?page=<%= page - 1 %>" class="btn">Prev</a><% } %>
+
+            <% 
+            const maxButtons = 3;
+            let start = Math.max(1, page - 1);
+            let end = Math.min(totalPages, start + maxButtons - 1);
+            if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+            %>
+
+            <% if (start > 1) { %><a href="/?page=1" class="btn">1</a><% if (start > 2) { %><span class="btn">...</span><% } %><% } %>
+
+            <% for (let i = start; i <= end; i++) { %>
+                <% if (i === page) { %><span class="btn active"><%= i %></span><% } else { %>
+                    <a href="/?page=<%= i %>" class="btn"><%= i %></a>
+                <% } %>
+            <% } %>
+
+            <% if (end < totalPages) { %><% if (end < totalPages - 1) { %><span class="btn">...</span><% } %><a href="/?page=<%= totalPages %>" class="btn"><%= totalPages %></a><% } %>
+
+            <% if (page < totalPages) { %><a href="/?page=<%= page + 1 %>" class="btn">Next</a><% } %>
+        </div>
+    </div>
+
+
+<script>
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    mobileMenuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+
+    // Chart
+    const ctx = document.getElementById('chartPengeluaran').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: <%- JSON.stringify(chartLabels) %>,
+            datasets: [{
+                label: 'Pengeluaran per Pakan (Rp)',
+                data: <%- JSON.stringify(chartValues) %>,
+                backgroundColor: '#8b5cf6',
+                borderColor: '#7c3aed',
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 15, 26, 0.9)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#a0aec0',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 12,
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { 
+                        color: 'rgba(139, 92, 246, 0.1)',
+                        drawBorder: false,
+                    },
+                    ticks: { 
+                        color: '#a0aec0',
+                        font: { weight: '600' }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { 
+                        color: '#a0aec0',
+                        font: { weight: '600' }
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    // Chart options toggle
+    const chartOptions = document.querySelectorAll('.chart-option');
+    chartOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            chartOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            // Here you would typically update the chart data based on the selected option
+        });
+    });
+</script>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            /* Use CSS Grid for easy centering */
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #044c66, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 5s ease infinite;
+            color: #ffffff;
+        }
+
+        .container {
+            padding: 3rem;
+            text-align: center;
+            border-radius: 20px;
+            /* The animated gradient background */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .content {
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            padding: 2rem 3rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px); /* Modern glassmorphism effect */
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-top: 0.5rem;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2.5rem;
+            background-color: transparent;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            border: 2px solid #ffffff;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .home-link:hover {
+            background-color: #ffffff;
+            color: #121212;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Keyframe for the gradient animation */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <div class="content">
+            <h1 class="error-code">404</h1>
+            <p class="error-message">This page has wandered off.</p>
+            <a href="/" class="home-link">Return to Safety</a>
+        </div>
+    </main>
+
+</body>
+</html>
