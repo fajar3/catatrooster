@@ -2,10 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('database.db');
 
 const app = express();
-const db = new Database(path.join(__dirname, 'database.db'));
 app.use((req, res, next) => {
     res.locals.currentPath = req.path;
     next();
