@@ -1,75 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-<header>
-<nav class="navbar">
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+  <header>
+    <nav class="navbar">
+      <button class="mobile-menu-toggle" id="mobileMenuToggle">
         <i class="fas fa-bars"></i>
-    </button>
-    <div class="nav-links">
+      </button>
+
+      <a href="/" class="logo">Assets</a>
+
+      <div class="nav-links">
         <div class="user-info">
-            <div class="user-avatar">MJ</div>
-            <div class="user-name">Mark Johnson</div>
-            
+          <div class="user-avatar">MJ</div>
+          <div class="user-name">Mark Johnson</div>
         </div>
-    </div>
-</nav>
-</header>
+      </div>
+    </nav>
+  </header>
 
-<aside class="sidebar" id="sidebar">
+  <!-- Sidebar hanya tampil di desktop -->
+  <aside class="sidebar" id="sidebar">
     <ul class="sidebar-menu">
-        <li>
-            <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">
-                <i class="fas fa-home"></i> Dashboard
-            </a>
-        </li>
-        <li>
-            <a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>">
-                <i class="fas fa-plus-circle"></i> Tambah Pengeluaran
-            </a>
-        </li>
-        <li>
-            <a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>">
-                <i class="fas fa-clipboard-list"></i> Daftar Kebutuhan
-            </a>
-        </li>
-        <li>
-            <a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>">
-                <i class="fas fa-egg"></i> Daftar Ayam
-            </a>
-        </li>
-        <li>
-            <a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>">
-                <i class="fas fa-dollar-sign"></i> Pemasukan
-            </a>
-        </li>
+      <li><a href="/" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i> Tambah</a></li>
+      <li><a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i> Kebutuhan</a></li>
+      <li><a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i> Ayam</a></li>
+      <li><a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> Pemasukan</a></li>
     </ul>
-</aside>
+  </aside>
 
-
-
-<main class="container">
+  <main class="container">
     <%- body %>
-    </main>
-    </body>
-     <script>
-    // Mobile menu toggle (jika diperlukan)
+  </main>
+
+  <!-- ✅ Bottom Navigation - hanya muncul di mobile -->
+  <nav class="bottom-nav">
+    <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i></a>
+    <a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i></a>
+    <a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i></a>
+    <a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i></a>
+    <a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i></a>
+  </nav>
+
+  <script>
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const sidebar = document.getElementById('sidebar');
-    
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-    }
-</script>
+
+    mobileMenuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      mobileMenuToggle.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+        if (!sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+          sidebar.classList.remove('active');
+          mobileMenuToggle.classList.remove('open');
+        }
+      }
+    });
+  </script>
+</body>
 </html>

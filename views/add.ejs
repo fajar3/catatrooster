@@ -1,10 +1,9 @@
 <div class="form-page-container">
-        <h1>Tambah Pengeluaran</h1>
         
         <div class="form-container">
             <form action="/add" method="POST">
                 <div class="form-group">
-                    <label for="nama">Pilih Pakan:</label>
+                    <label for="nama">Pilih:</label>
                     <select name="nama" id="nama" required>
                         <% kebutuhan.forEach(k => { %>
                             <option value="<%= k.nama %>"><%= k.nama %> (Rp <%= k.harga.toLocaleString() %>)</option>

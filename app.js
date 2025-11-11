@@ -124,7 +124,7 @@ app.get('/', (req, res) => {
     const totalAll = totalAllRow.total || 0;
     const pemasukanTotal = pemasukanRow.total || 0;
     const ayamTotal = ayamRow.total || 0;
-    const keuanganTotal = pemasukanTotal - totalAll;
+    const keuanganTotal = totalAll - pemasukanTotal ;
 
     const chartRows = queryAll(`
       SELECT nama, SUM(harga) as total FROM pengeluaran GROUP BY nama

@@ -1,9 +1,8 @@
 
-    <h1>Daftar Ayam (Aset)</h1>
 
     <!-- Form untuk menambah data ayam -->
     <form action="/ayam" method="POST" class="form-add">
-        <input type="number" name="jumlah" placeholder="Jumlah Anak Ayam" required>
+        <input type="number" name="jumlah" placeholder="Jumlah Asset" required>
         <input type="number" name="harga" placeholder="Harga Total (Rp)" required>
         <button type="submit">Tambah Ayam</button>
     </form>
@@ -21,7 +20,7 @@
                 <span class="value">Rp <%= totalPemasukan.toLocaleString() %></span>
             </li>
             <li>
-                <span class="label">Total Keuangan:</span>
+                <span class="label">Sisa Keuangan Asset:</span>
                 <span class="value">Rp <%= totalKeuangan.toLocaleString() %></span>
             </li>
         </ul>

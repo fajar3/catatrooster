@@ -931,3 +931,87 @@ footer {
         margin-bottom: 1rem;
     }
 }
+
+/* === Bottom Navigation (Mobile Only, Dark Purple Theme) === */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-sidebar) 100%);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    border-top: 1px solid var(--border-color);
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+  }
+
+  .bottom-nav a {
+    color: var(--text-secondary);
+    font-size: 1.3rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    flex: 1;
+    padding: 6px 0;
+    position: relative;
+  }
+
+  .bottom-nav a i {
+    font-size: 1.6rem;
+    margin-bottom: 3px;
+    transition: color 0.25s ease, transform 0.25s ease;
+  }
+
+  .bottom-nav a.active i {
+    color: var(--accent-purple);
+    transform: translateY(-3px);
+  }
+
+  .bottom-nav a.active {
+    color: var(--accent-purple);
+  }
+
+  .bottom-nav a:hover {
+    color: var(--text-primary);
+    transform: translateY(-2px);
+  }
+
+  /* efek garis tipis ungu di atas icon aktif */
+  .bottom-nav a.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 30%;
+    height: 3px;
+    background: var(--accent-purple);
+    border-radius: 3px;
+  }
+
+  /* Tambahkan ruang bawah agar konten tidak ketutup */
+  .container {
+    padding-bottom: 80px;
+  }
+
+  /* Sembunyikan sidebar & tombol burger */
+  .sidebar,
+  .mobile-menu-toggle {
+    display: none;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+  }
+}
