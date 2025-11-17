@@ -1,0 +1,504 @@
+<div class="header-section">
+  <h1 class="page-title">Daftar Assets</h1>
+  <div class="header-actions">
+    <button class="btn btn-primary" onclick="showAddAssetModal()">
+      <i class="fas fa-plus-circle"></i> Tambah Asset Baru
+    </button>
+    <button class="btn btn-secondary" onclick="printReport()">
+      <i class="fas fa-print"></i> Cetak Laporan
+    </button>
+  </div>
+</div>
+
+<!-- Ringkasan Assets -->
+<div class="stats">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Total Assets</div>
+      <div class="card-icon purple">
+        <i class="fas fa-cube"></i>
+      </div>
+    </div>
+    <div class="card-value"><%= assets.length %></div>
+    <div class="card-change">asset terdaftar</div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Asset Aktif</div>
+      <div class="card-icon green">
+        <i class="fas fa-check-circle"></i>
+      </div>
+    </div>
+    <div class="card-value">
+      <%= assets.filter(a => a.status === 'active').length || assets.length %>
+    </div>
+    <div class="card-change">sedang aktif</div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Total Nilai</div>
+      <div class="card-icon blue">
+        <i class="fas fa-chart-line"></i>
+      </div>
+    </div>
+    <div class="card-value">
+      <%= assets.reduce((total, a) => total + (a.value || 0), 0).toLocaleString('id-ID') %>
+    </div>
+    <div class="card-change">nilai total</div>
+  </div>
+</div>
+
+  <div class="filter-group" style="flex: 1;">
+    <label for="searchInput">Cari Asset:</label>
+    <div class="table-search" style="width: 100%;">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Cari berdasarkan nama atau ID..." onkeyup="searchAssets()">
+    </div>
+  </div>
+</div>
+
+<!-- Tabel Assets -->
+<div class="table-container">
+  <div class="table-header">
+    <h2 class="table-title">Data Assets</h2>
+    <div class="table-actions">
+      <button class="btn btn-secondary" onclick="exportData()">
+        <i class="fas fa-download"></i> Export
+      </button>
+    </div>
+  </div>
+  
+  <table id="assetsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nama Asset</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% assets.forEach(a => { %>
+        <tr data-status="<%= a.status || 'active' %>" data-type="<%= a.type || 'other' %>">
+          <td>
+            <span class="asset-id">#<%= a.id %></span>
+          </td>
+          <td>
+            <div class="asset-info">
+              <div class="asset-name">
+                <i class="fas fa-cube"></i> <%= a.name %>
+              </div>
+              <% if (a.description) { %>
+                <div class="asset-description"><%= a.description %></div>
+              <% } %>
+            </div>
+          </td>
+          <td>
+            <div class="table-actions">
+              <button onclick="viewAsset(<%= a.id %>)" class="btn-view" title="Lihat Detail">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button onclick="editAsset(<%= a.id %>)" class="btn-edit" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteAsset(<%= a.id %>, '<%= a.name %>')" class="btn-delete" title="Hapus">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  
+  <% if (assets.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-cube"></i>
+      <h3>Belum ada asset terdaftar</h3>
+      <p>Tambahkan asset pertama Anda untuk memulai manajemen</p>
+      <button class="btn btn-primary" onclick="showAddAssetModal()">
+        <i class="fas fa-plus"></i> Tambah Asset
+      </button>
+    </div>
+  <% } %>
+</div>
+
+<!-- Modal Tambah/Edit Asset -->
+<div id="assetModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Tambah Asset Baru</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <form id="assetForm" action="/assets" method="POST">
+      <div class="form-group">
+        <label for="assetName">Nama Asset *</label>
+        <input type="text" id="assetName" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="assetType">Tipe Asset</label>
+        <select id="assetType" name="type">
+          <option value="farm">Peternakan</option>
+          <option value="equipment">Peralatan</option>
+          <option value="vehicle">Kendaraan</option>
+          <option value="building">Gedung</option>
+          <option value="other">Lainnya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="assetStatus">Status</label>
+        <select id="assetStatus" name="status">
+          <option value="active">Aktif</option>
+          <option value="inactive">Tidak Aktif</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="assetValue">Nilai Asset</label>
+        <input type="number" id="assetValue" name="value" min="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label for="assetDescription">Deskripsi</label>
+        <textarea id="assetDescription" name="description" rows="3" placeholder="Deskripsi asset..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+// Helper functions
+function formatDate(dateString) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('id-ID', options);
+}
+
+function getTypeLabel(type) {
+  const labels = {
+    'farm': 'Peternakan',
+    'equipment': 'Peralatan',
+    'vehicle': 'Kendaraan',
+    'building': 'Gedung',
+    'other': 'Lainnya'
+  };
+  return labels[type] || 'Lainnya';
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    'active': 'Aktif',
+    'inactive': 'Tidak Aktif',
+    'maintenance': 'Maintenance'
+  };
+  return labels[status] || 'Aktif';
+}
+
+// Modal functions
+function showAddAssetModal() {
+  document.getElementById('modalTitle').textContent = 'Tambah Asset Baru';
+  document.getElementById('assetForm').reset();
+  document.getElementById('assetForm').action = '/assets';
+  document.getElementById('assetModal').style.display = 'flex';
+}
+
+function editAsset(id) {
+  // Load asset data and show edit modal
+  document.getElementById('modalTitle').textContent = 'Edit Asset';
+  document.getElementById('assetForm').action = `/assets/${id}`;
+  // Load existing data here
+  document.getElementById('assetModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('assetModal').style.display = 'none';
+}
+
+// Asset actions
+function viewAsset(id) {
+  window.location.href = `/assets/${id}`;
+}
+
+function deleteAsset(id, name) {
+  if (confirm(`Apakah Anda yakin ingin menghapus asset "${name}"?`)) {
+    // Submit delete form or make API call
+    window.location.href = `/assets/delete/${id}`;
+  }
+}
+
+// Search and filter functions
+function searchAssets() {
+  const input = document.getElementById("searchInput");
+  const filter = input.value.toUpperCase();
+  const table = document.getElementById("assetsTable");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) {
+    const tds = tr[i].getElementsByTagName("td");
+    let found = false;
+    
+    for (let j = 0; j < tds.length; j++) {
+      const td = tds[j];
+      if (td) {
+        const txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+          break;
+        }
+      }
+    }
+    
+    tr[i].style.display = found ? "" : "none";
+  }
+}
+
+function filterAssets() {
+  const statusFilter = document.getElementById('filterStatus').value;
+  const typeFilter = document.getElementById('filterType').value;
+  const rows = document.querySelectorAll('#assetsTable tbody tr');
+  
+  rows.forEach(row => {
+    let show = true;
+    
+    if (statusFilter && row.dataset.status !== statusFilter) {
+      show = false;
+    }
+    
+    if (typeFilter && row.dataset.type !== typeFilter) {
+      show = false;
+    }
+    
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+// Export function
+function exportData() {
+  window.location.href = '/export/assets';
+}
+
+// Print function
+function printReport() {
+  window.print();
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('assetModal');
+  if (event.target == modal) {
+    closeModal();
+  }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  // Format dates
+  const dateElements = document.querySelectorAll('.date-badge');
+  dateElements.forEach(el => {
+    const dateText = el.textContent.trim();
+    if (dateText && !dateText.includes('<i')) {
+      el.innerHTML = '<i class="fas fa-calendar"></i> ' + formatDate(dateText);
+    }
+  });
+});
+</script>
+
+<style>
+/* Tambahan style khusus untuk halaman ini */
+.asset-id {
+  font-weight: 700;
+  color: var(--accent-purple);
+  font-family: 'Courier New', monospace;
+}
+
+.asset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.asset-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.asset-name i {
+  color: var(--accent-purple);
+}
+
+.asset-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.type-badge.farm {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.type-badge.equipment {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: var(--accent-purple);
+}
+
+.type-badge.vehicle {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--accent-blue);
+}
+
+.type-badge.building {
+  background-color: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.type-badge.other {
+  background-color: rgba(160, 174, 192, 0.2);
+  color: var(--text-secondary);
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-content .form-group {
+  padding: 0 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-content .form-actions {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Print styles */
+@media print {
+  .header-actions,
+  .filter-section,
+  .table-search,
+  .table-actions,
+  .page-actions,
+  .modal {
+    display: none !important;
+  }
+  
+  .container {
+    margin-left: 0 !important;
+    padding: 1rem !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    min-width: 800px;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+}
+</style>

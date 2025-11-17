@@ -13,29 +13,36 @@
 <body>
   <header>
     <nav class="navbar">
-      <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
         <i class="fas fa-bars"></i>
       </button>
 
-      <a href="/" class="logo">Assets</a>
+      <a href="/" class="logo">
+        <i class="fas fa-cube"></i>
+        Assets
+      </a>
 
-      <div class="nav-links">
-        <div class="user-info">
-          <div class="user-avatar">MJ</div>
-          <div class="user-name">Mark Johnson</div>
-        </div>
-      </div>
+      <form method="GET" action="/" id="switchAssetForm">
+        <select name="asset" onchange="document.getElementById('switchAssetForm').submit()">
+          <% assets.forEach(a => { %>
+            <option value="<%= a.id %>" <%= a.id === currentAsset ? 'selected' : '' %>><%= a.name %></option>
+          <% }) %>
+        </select>
+      </form>
     </nav>
   </header>
 
-  <!-- Sidebar hanya tampil di desktop -->
+  <!-- Sidebar for desktop -->
   <aside class="sidebar" id="sidebar">
     <ul class="sidebar-menu">
-      <li><a href="/" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Dashboard</a></li>
-      <li><a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i> Tambah</a></li>
-      <li><a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i> Kebutuhan</a></li>
-      <li><a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i> Ayam</a></li>
-      <li><a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> Pemasukan</a></li>
+      <li><a href="/?asset=<%= currentAsset %>" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="/add?asset=<%= currentAsset %>" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i> Tambah</a></li>
+      <li><a href="/kebutuhan?asset=<%= currentAsset %>" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i> Kebutuhan</a></li>
+      <li><a href="/ayam?asset=<%= currentAsset %>" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i> Ayam</a></li>
+      <li><a href="/pemasukan?asset=<%= currentAsset %>" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> Pemasukan</a></li>
+      <li><a href="/pengeluaran?asset=<%= currentAsset %>" class="<%= currentPath === '/pengeluaran' ? 'active' : '' %>"><i class="fas fa-money-bill-wave"></i> Pengeluaran</a></li>
+      <li><a href="/assets?asset=<%= currentAsset %>" class="<%= currentPath === '/assets' ? 'active' : '' %>"><i class="fas fa-folder"></i> Assets</a></li>
+      <li><a href="/export?asset=<%= currentAsset %>" class="export-btn"><i class="fas fa-download"></i> Export JSON</a></li>
     </ul>
   </aside>
 
@@ -43,31 +50,51 @@
     <%- body %>
   </main>
 
-  <!-- ✅ Bottom Navigation - hanya muncul di mobile -->
+  <!-- Bottom Navigation for mobile -->
   <nav class="bottom-nav">
-    <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i></a>
-    <a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i></a>
-    <a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i></a>
-    <a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i></a>
-    <a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i></a>
+    <a href="/?asset=<%= currentAsset %>" class="<%= currentPath === '/' ? 'active' : '' %>" aria-label="Dashboard">
+      <i class="fas fa-home"></i>
+    </a>
+    <a href="/add?asset=<%= currentAsset %>" class="<%= currentPath === '/add' ? 'active' : '' %>" aria-label="Add">
+      <i class="fas fa-plus-circle"></i>
+    </a>
+    <a href="/kebutuhan?asset=<%= currentAsset %>" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>" aria-label="Requirements">
+      <i class="fas fa-clipboard-list"></i>
+    </a>
+    <a href="/ayam?asset=<%= currentAsset %>" class="<%= currentPath === '/ayam' ? 'active' : '' %>" aria-label="Chickens">
+      <i class="fas fa-egg"></i>
+    </a>
+    <a href="/pemasukan?asset=<%= currentAsset %>" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>" aria-label="Income">
+      <i class="fas fa-dollar-sign"></i>
+    </a>
   </nav>
 
   <script>
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.getElementById('sidebar');
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+      const sidebar = document.getElementById('sidebar');
 
-    mobileMenuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
-      mobileMenuToggle.classList.toggle('open');
-    });
+      mobileMenuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        mobileMenuToggle.classList.toggle('open');
+      });
 
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
-        if (!sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+          if (!sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+            sidebar.classList.remove('active');
+            mobileMenuToggle.classList.remove('open');
+          }
+        }
+      });
+
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024) {
           sidebar.classList.remove('active');
           mobileMenuToggle.classList.remove('open');
         }
-      }
+      });
     });
   </script>
 </body>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <a href="/" class="logo">Assets</a>
+
+      
+      <form method="GET" action="/" id="switchAssetForm">
+  <select name="asset" onchange="document.getElementById('switchAssetForm').submit()">
+    <% assets.forEach(a => { %>
+      <option value="<%= a.id %>" <%= a.id === currentAsset ? 'selected' : '' %>><%= a.name %></option>
+    <% }) %>
+  </select>
+</form>
+
+    </nav>
+  </header>
+
+  <!-- Sidebar hanya tampil di desktop -->
+  <aside class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="/" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i> Tambah</a></li>
+      <li><a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i> Kebutuhan</a></li>
+      <li><a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i> Ayam</a></li>
+      <li><a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> Pemasukan</a></li>
+       <li><a href="/pengeluaran" class="<%= currentPath === '/pengeluaran' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> list</a></li>
+       <li><a href="/assets" class="<%= currentPath === '/assets' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> Assets</a></li>
+    </ul>
+  </aside>
+
+  <main class="container">
+    <%- body %>
+  </main>
+
+  <!-- ✅ Bottom Navigation - hanya muncul di mobile -->
+  <nav class="bottom-nav">
+    <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i></a>
+    <a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i></a>
+    <a href="/kebutuhan" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i></a>
+    <a href="/ayam" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i></a>
+    <a href="/pemasukan" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i></a>
+  </nav>
+
+  <script>
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    mobileMenuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      mobileMenuToggle.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+        if (!sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+          sidebar.classList.remove('active');
+          mobileMenuToggle.classList.remove('open');
+        }
+      }
+    });
+
+    
+  function switchAsset(assetId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('asset', assetId);
+    window.location.href = url.toString();
+  }
+
+  </script>
+</body>
+</html>

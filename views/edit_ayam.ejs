@@ -1,0 +1,6 @@
+<h2>Edit Ayam</h2>
+<form action="/ayam/edit/<%= item.id %>?asset=<%= currentAsset %>" method="POST">
+  <input type="number" name="jumlah" value="<%= item.jumlah %>" required>
+  <input type="number" name="harga" value="<%= item.harga %>" required>
+  <button type="submit">Simpan</button>
+</form>

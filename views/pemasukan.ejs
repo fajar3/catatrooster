@@ -1,35 +1,457 @@
+<div class="header-section">
+  <h1 class="page-title">Penjualan Ayam (Asset <%= currentAsset %>)</h1>
+  <div class="header-actions">
+    <a href="/add?asset=<%= currentAsset %>" class="btn btn-primary">
+      <i class="fas fa-plus-circle"></i> Transaksi Baru
+    </a>
+    <button class="btn btn-secondary" onclick="printReport()">
+      <i class="fas fa-print"></i> Cetak Laporan
+    </button>
+  </div>
+</div>
 
+<!-- Ringkasan Penjualan -->
+<div class="financial-summary">
+  <h3><i class="fas fa-chart-line"></i> Ringkasan Penjualan</h3>
+  <ul>
+    <li>
+      <span class="label"><i class="fas fa-shopping-cart"></i> Total Penjualan:</span>
+    </li>
+    <li>
+      <span class="label"><i class="fas fa-egg"></i> Total Ayam Terjual:</span>
+      <span class="value"><%= pemasukan.reduce((total, p) => total + p.jumlah, 0) %> ekor</span>
+    </li>
+    <li>
+      <span class="label"><i class="fas fa-tag"></i> Rata-rata Harga:</span>
+      <span class="value">Rp <%= pemasukan.length > 0 ? Math.round(pemasukan.reduce((total, p) => total + p.harga, 0) / pemasukan.length).toLocaleString('id-ID') : 0 %></span>
+    </li>
+  </ul>
+</div>
 
-    <!-- Form untuk mencatat penjualan baru -->
-    <form action="/pemasukan" method="POST" class="form-add">
-        <input type="number" name="jumlah" placeholder="Jumlah Asset Terjual" required>
-        <input type="number" name="harga" placeholder="Harga per Satuan (Rp)" required>
-        <button type="submit">Catat Penjualan</button>
-    </form>
+  <div class="filter-group">
+    <label for="filterYear">Filter Tahun:</label>
+    <select id="filterYear" onchange="filterByYear()">
+      <option value="">Semua Tahun</option>
+      <% for(let year = new Date().getFullYear(); year >= 2020; year--) { %>
+        <option value="<%= year %>"><%= year %></option>
+      <% } %>
+    </select>
+  </div>
+</div>
 
-    <!-- Tabel untuk menampilkan daftar penjualan -->
-    <div class="table-container">
-        <div class="table-header">
-            <h2 class="table-title">Daftar Penjualan</h2>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Jumlah</th>
-                    <th>Harga/Satuan</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% pemasukan.forEach(item => { %>
-                <tr>
-                    <td><%= item.tanggal %></td>
-                    <td><%= item.jumlah %></td>
-                    <td>Rp <%= item.harga.toLocaleString() %></td>
-                    <td>Rp <%= item.total.toLocaleString() %></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
+<!-- Form tambah penjualan -->
+<div class="form-add">
+  <form action="/pemasukan?asset=<%= currentAsset %>" method="POST" style="display: flex; width: 100%; gap: 1rem; align-items: center;">
+    <input type="number" name="jumlah" placeholder="Jumlah Ayam" required style="flex: 1;" min="1">
+    <input type="number" name="harga" placeholder="Harga per Ekor" required style="width: 200px;" min="0">
+    <input type="date" name="tanggal" required style="width: 180px;" value="<%= new Date().toISOString().split('T')[0] %>">
+    <input type="text" name="pembeli" placeholder="Nama Pembeli (opsional)" style="width: 200px;">
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Tambah
+    </button>
+  </form>
+</div>
+
+<!-- Tabel penjualan -->
+<div class="table-container">
+  <div class="table-header">
+    <h2 class="table-title">Data Penjualan</h2>
+    <div class="table-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Cari penjualan..." onkeyup="searchTable()">
     </div>
+  </div>
+  
+  <table id="pemasukanTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tanggal</th>
+        <th>Pembeli</th>
+        <th>Jumlah</th>
+        <th>Harga/Ekor</th>
+        <th>Total</th>
+        <th style="width: 150px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% pemasukan.forEach(p => { %>
+          <td>
+            <%= p.pembeli ? `<span class="buyer-name">${p.pembeli}</span>` : '<span class="no-buyer">-</span>' %>
+          </td>
+          <td>
+            <span class="badge badge-success">
+              <i class="fas fa-egg"></i> <%= p.jumlah %> ekor
+            </span>
+          </td>
+          <td>
+            <span class="currency">Rp <%= p.harga.toLocaleString('id-ID') %></span>
+          </td>
+          <td>
+            <span class="currency total-revenue">Rp <%= p.total.toLocaleString('id-ID') %></span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <a href="/pemasukan/edit/<%= p.id %>?asset=<%= currentAsset %>" class="btn-edit" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button onclick="viewDetails(<%= p.id %>)" class="btn-view" title="Detail">
+                <i class="fas fa-eye"></i>
+              </button>
+              <form action="/pemasukan/delete/<%= p.id %>?asset=<%= currentAsset %>" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus penjualan ini?')">
+                <button type="submit" class="btn-delete" title="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  
+  <% if (pemasukan.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-shopping-cart"></i>
+      <h3>Belum ada data penjualan</h3>
+      <p>Mulai catat penjualan pertama Anda menggunakan form di atas</p>
+    </div>
+  <% } %>
+</div>
+
+<!-- Statistik Penjualan -->
+<div class="stats">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Total Transaksi</div>
+      <div class="card-icon purple">
+        <i class="fas fa-receipt"></i>
+      </div>
+    </div>
+    <div class="card-value"><%= pemasukan.length %></div>
+    <div class="card-change">transaksi</div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Omzet Hari Ini</div>
+      <div class="card-icon blue">
+        <i class="fas fa-calendar-day"></i>
+      </div>
+    </div>
+    <div class="card-value">
+      <%= pemasukan.filter(p => new Date(p.tanggal).toDateString() === new Date().toDateString())
+         .reduce((total, p) => total + p.total, 0).toLocaleString('id-ID') %>
+    </div>
+    <div class="card-change">hari ini</div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Rata-rata/Tx</div>
+      <div class="card-icon pink">
+        <i class="fas fa-chart-bar"></i>
+      </div>
+    </div>
+    <div class="card-value">
+      <%= pemasukan.length > 0 ? Math.round(pemasukan.reduce((total, p) => total + p.total, 0) / pemasukan.length).toLocaleString('id-ID') : 0 %>
+    </div>
+    <div class="card-change">per transaksi</div>
+  </div>
+</div>
+
+<!-- Grafik Penjualan (opsional) -->
+<div class="chart-container">
+  <div class="chart-header">
+    <h3 class="chart-title">Tren Penjualan</h3>
+    <div class="chart-options">
+      <button class="chart-option active" onclick="updateChart('week')">Minggu</button>
+      <button class="chart-option" onclick="updateChart('month')">Bulan</button>
+      <button class="chart-option" onclick="updateChart('year')">Tahun</button>
+    </div>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="salesChart"></canvas>
+  </div>
+</div>
+
+<!-- Tombol aksi tambahan -->
+<div class="page-actions">
+  <a href="/export/pemasukan?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-download"></i> Export Data
+  </a>
+  <a href="/kebutuhan?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-clipboard-list"></i> Lihat Kebutuhan
+  </a>
+  <a href="/ayam?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-egg"></i> Data Ayam
+  </a>
+  <a href="/?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+  </a>
+</div>
+
+<script>
+// Fungsi untuk format tanggal
+function formatDate(dateString) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('id-ID', options);
+}
+
+// Fungsi pencarian
+function searchTable() {
+  const input = document.getElementById("searchInput");
+  const filter = input.value.toUpperCase();
+  const table = document.getElementById("pemasukanTable");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) {
+    const tds = tr[i].getElementsByTagName("td");
+    let found = false;
+    
+    for (let j = 0; j < tds.length; j++) {
+      const td = tds[j];
+      if (td) {
+        const txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+          break;
+        }
+      }
+    }
+    
+    tr[i].style.display = found ? "" : "none";
+  }
+}
+
+// Filter berdasarkan bulan
+function filterByMonth() {
+  const month = document.getElementById('filterMonth').value;
+  const rows = document.querySelectorAll('#pemasukanTable tbody tr');
+  
+  rows.forEach(row => {
+    if (!month) {
+      row.style.display = '';
+    } else {
+      const date = new Date(row.dataset.date);
+      if (date.getMonth() == month) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  });
+}
+
+// Filter berdasarkan tahun
+function filterByYear() {
+  const year = document.getElementById('filterYear').value;
+  const rows = document.querySelectorAll('#pemasukanTable tbody tr');
+  
+  rows.forEach(row => {
+    if (!year) {
+      row.style.display = '';
+    } else {
+      const date = new Date(row.dataset.date);
+      if (date.getFullYear() == year) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  });
+}
+
+// View details
+function viewDetails(id) {
+  // Implementasi view details modal atau redirect
+  alert(`View details for transaction ID: ${id}`);
+}
+
+// Print report
+function printReport() {
+  window.print();
+}
+
+// Initialize chart
+document.addEventListener('DOMContentLoaded', function() {
+  // Format tanggal
+  const dateElements = document.querySelectorAll('.date-badge');
+  dateElements.forEach(el => {
+    const dateText = el.textContent.trim();
+    if (dateText && !dateText.includes('<i')) {
+      el.innerHTML = '<i class="fas fa-calendar"></i> ' + formatDate(dateText);
+    }
+  });
+
+  // Initialize sales chart
+  const ctx = document.getElementById('salesChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+        datasets: [{
+          label: 'Penjualan',
+          data: [1200000, 1900000, 1500000, 2500000, 2200000, 3000000, 2800000],
+          borderColor: '#8b5cf6',
+          backgroundColor: 'rgba(139, 92, 246, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return 'Rp ' + value.toLocaleString('id-ID');
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+});
+
+// Update chart based on period
+function updateChart(period) {
+  // Update chart options and data based on selected period
+  const options = document.querySelectorAll('.chart-option');
+  options.forEach(opt => opt.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Implement chart update logic here
+}
+</script>
+
+<style>
+/* Tambahan style khusus untuk halaman ini */
+.filter-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.filter-group select {
+  padding: 0.6rem 1rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  min-width: 150px;
+}
+
+.badge-success {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.buyer-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.no-buyer {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.total-revenue {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.btn-view {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-blue);
+}
+
+.btn-view:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.1);
+}
+
+/* Print styles */
+@media print {
+  .header-actions,
+  .form-add,
+  .filter-section,
+  .table-search,
+  .table-actions,
+  .page-actions,
+  .chart-container {
+    display: none !important;
+  }
+  
+  .container {
+    margin-left: 0 !important;
+    padding: 1rem !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .form-add form {
+    flex-direction: column;
+  }
+  
+  .form-add input {
+    width: 100% !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    min-width: 800px;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

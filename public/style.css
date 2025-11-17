@@ -6,15 +6,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-.sidebar-menu a.active {
-    background: #0d6efd;
-    color: white;
-    border-radius: 8px;
-}
-
-.sidebar-menu a.active i {
-    color: #fff;
-}
 
 :root {
     --bg-primary: #0f0f1a;
@@ -111,6 +102,16 @@ main {
     background-color: rgba(139, 92, 246, 0.1);
 }
 
+.sidebar-menu a.active {
+    background: #0d6efd;
+    color: white;
+    border-radius: 8px;
+}
+
+.sidebar-menu a.active i {
+    color: #fff;
+}
+
 .sidebar-menu a.active::before {
     content: '';
     position: absolute;
@@ -146,6 +147,12 @@ main {
     font-weight: 800;
     color: var(--accent-purple);
     text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar .logo i {
+    margin-right: 8px;
 }
 
 .nav-links {
@@ -728,6 +735,7 @@ footer {
         width: 100%;
     }
 }
+
 /* === Daftar Kebutuhan Page Styles === */
 
 /* Style untuk form tambah yang berada di atas tabel */
@@ -1014,4 +1022,28 @@ footer {
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-secondary);
   }
+}
+
+/* Asset selector style */
+#switchAssetForm {
+    display: flex;
+    align-items: center;
+}
+
+#switchAssetForm select {
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#switchAssetForm select:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }

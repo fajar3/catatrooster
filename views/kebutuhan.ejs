@@ -1,42 +1,221 @@
+<div class="header-section">
+  <h1 class="page-title">Daftar Kebutuhan (Asset <%= currentAsset %>)</h1>
+  <div class="header-actions">
+    <a href="/add?asset=<%= currentAsset %>" class="btn btn-primary">
+      <i class="fas fa-plus-circle"></i> Tambah Pengeluaran
+    </a>
+  </div>
+</div>
 
+<!-- Form tambah kebutuhan di atas tabel -->
+<div class="form-add">
+  <form action="/kebutuhan?asset=<%= currentAsset %>" method="POST" style="display: flex; width: 100%; gap: 1rem; align-items: center;">
+    <input type="text" name="nama" placeholder="Nama Kebutuhan" required style="flex: 1;">
+    <input type="number" name="harga" placeholder="Harga" required style="width: 200px;">
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Tambah
+    </button>
+  </form>
+</div>
 
-    <!-- Form untuk menambah kebutuhan baru -->
-    <form action="/kebutuhan" method="POST" class="form-add">
-        <input type="text" name="nama" placeholder="Nama" required>
-        <input type="number" name="harga" placeholder="Harga (Rp)" required>
-        <button type="submit">Tambah Kebutuhan</button>
-    </form>
-
-    <!-- Tabel untuk menampilkan daftar kebutuhan -->
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama Pakan</th>
-                    <th>Harga (Rp)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% kebutuhan.forEach(k => { %>
-                <tr>
-                    <td><%= k.nama %></td>
-                    <td>Rp <%= k.harga.toLocaleString() %></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
+<!-- Tabel kebutuhan -->
+<div class="table-container">
+  <div class="table-header">
+    <h2 class="table-title">Daftar Kebutuhan</h2>
+    <div class="table-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Cari kebutuhan..." onkeyup="searchTable()">
     </div>
+  </div>
+  
+  <table id="kebutuhanTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nama Kebutuhan</th>
+        <th>Harga</th>
+        <th style="width: 150px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% kebutuhan.forEach(k => { %>
+        <tr>
+          <td><%= k.id %></td>
+          <td><%= k.nama %></td>
+          <td>
+            <span class="currency">Rp <%= k.harga.toLocaleString('id-ID') %></span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <a href="/kebutuhan/edit/<%= k.id %>?asset=<%= currentAsset %>" class="btn-edit" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="/kebutuhan/delete/<%= k.id %>?asset=<%= currentAsset %>" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kebutuhan ini?')">
+                <button type="submit" class="btn-delete" title="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  
+  <% if (kebutuhan.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-clipboard-list"></i>
+      <h3>Belum ada data kebutuhan</h3>
+      <p>Tambahkan kebutuhan pertama Anda menggunakan form di atas</p>
+    </div>
+  <% } %>
+</div>
 
+<!-- Ringkasan total kebutuhan -->
+<div class="financial-summary">
+  <h3><i class="fas fa-chart-pie"></i> Ringkasan Kebutuhan</h3>
+  <ul>
+    <li>
+      <span class="label">Jumlah Item:</span>
+      <span class="value"><%= kebutuhan.length %> item</span>
+    </li>
+    <li>
+      <span class="label">Total Kebutuhan:</span>
+      <span class="value">Rp <%= kebutuhan.reduce((total, k) => total + k.harga, 0).toLocaleString('id-ID') %></span>
+    </li>
+    <li>
+      <span class="label">Rata-rata:</span>
+      <span class="value">Rp <%= kebutuhan.length > 0 ? Math.round(kebutuhan.reduce((total, k) => total + k.harga, 0) / kebutuhan.length).toLocaleString('id-ID') : 0 %></span>
+    </li>
+  </ul>
+</div>
 
+<!-- Tombol aksi tambahan -->
+<div class="page-actions">
+  <a href="/export/kebutuhan?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-download"></i> Export Data
+  </a>
+  <a href="/?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+  </a>
+</div>
 
 <script>
-    // Mobile menu toggle (jika diperlukan)
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.getElementById('sidebar');
+// Fungsi untuk pencarian tabel
+function searchTable() {
+  const input = document.getElementById("searchInput");
+  const filter = input.value.toUpperCase();
+  const table = document.getElementById("kebutuhanTable");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) {
+    const tdName = tr[i].getElementsByTagName("td")[1];
+    const tdPrice = tr[i].getElementsByTagName("td")[2];
     
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
+    if (tdName || tdPrice) {
+      const txtValueName = tdName.textContent || tdName.innerText;
+      const txtValuePrice = tdPrice.textContent || tdPrice.innerText;
+      
+      if (txtValueName.toUpperCase().indexOf(filter) > -1 || 
+          txtValuePrice.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
     }
+  }
+}
+
+// Format currency saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+  const currencyElements = document.querySelectorAll('.currency');
+  currencyElements.forEach(el => {
+    const text = el.textContent;
+    const number = parseInt(text.replace(/[^\d]/g, ''));
+    if (!isNaN(number)) {
+      el.textContent = 'Rp ' + number.toLocaleString('id-ID');
+    }
+  });
+});
 </script>
+
+<style>
+/* Tambahan style khusus untuk halaman ini */
+.currency {
+  font-weight: 600;
+  color: var(--accent-purple);
+}
+
+.btn-edit, .btn-delete {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit {
+  color: var(--accent-blue);
+}
+
+.btn-edit:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-delete {
+  color: #ef4444;
+}
+
+.btn-delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  transform: scale(1.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-add form {
+    flex-direction: column;
+  }
+  
+  .form-add input {
+    width: 100% !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    min-width: 600px;
+  }
+}
+</style>

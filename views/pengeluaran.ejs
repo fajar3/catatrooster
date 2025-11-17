@@ -1,0 +1,478 @@
+<div class="header-section">
+  <h1 class="page-title">Daftar Pengeluaran (Asset <%= currentAsset %>)</h1>
+  <div class="header-actions">
+    <a href="/add?asset=<%= currentAsset %>" class="btn btn-primary">
+      <i class="fas fa-plus-circle"></i> Tambah Pengeluaran
+    </a>
+    <button class="btn btn-secondary" onclick="printReport()">
+      <i class="fas fa-print"></i> Cetak Laporan
+    </button>
+  </div>
+</div>
+
+<!-- Ringkasan Pengeluaran -->
+<div class="financial-summary">
+  <h3><i class="fas fa-money-bill-wave"></i> Ringkasan Pengeluaran</h3>
+  <ul>
+    <li>
+      <span class="label"><i class="fas fa-receipt"></i> Jumlah Transaksi:</span>
+      <span class="value"><%= pengeluaran.length %> transaksi</span>
+    </li>
+    <li>
+    </li>
+  </ul>
+</div>
+
+
+<!-- Form tambah pengeluaran -->
+<div class="form-add">
+  <form action="/pengeluaran?asset=<%= currentAsset %>" method="POST" style="display: flex; width: 100%; gap: 1rem; align-items: center; flex-wrap: wrap;">
+   
+    <input type="text" name="nama" placeholder="Nama Pengeluaran" required style="flex: 1; min-width: 200px;">
+    <input type="number" name="jumlah" placeholder="Qty" required style="width: 100px;" min="1">
+    <input type="number" name="harga" placeholder="Harga" required style="width: 150px;" min="0">
+    <input type="date" name="tanggal" required style="width: 180px;" value="<%= new Date().toISOString().split('T')[0] %>">
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Tambah
+    </button>
+  </form>
+</div>
+
+<!-- Tabel pengeluaran -->
+<div class="table-container">
+  <div class="table-header">
+    <h2 class="table-title">Data Pengeluaran</h2>
+    <div class="table-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Cari pengeluaran..." onkeyup="searchTable()">
+    </div>
+  </div>
+  
+  <table id="pengeluaranTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tanggal</th>
+        <th>Kategori</th>
+        <th>Nama Pengeluaran</th>
+        <th>Qty</th>
+        <th>Harga</th>
+        <th style="width: 150px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% pengeluaran.forEach(p => { %>
+        <tr data-category="<%= p.kategori || 'lainnya' %>" >
+          <td><%= p.id %></td>
+          <td>
+            <span class="date-badge">
+            </span>
+          </td>
+          <td>
+          </td>
+          <td>
+            <span class="expense-name"><%= p.nama %></span>
+          </td>
+          <td>
+            <span class="quantity-badge"><%= p.jumlah %></span>
+          </td>
+          <td>
+            <span class="currency">Rp <%= p.harga.toLocaleString('id-ID') %></span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <a href="/pengeluaran/edit/<%= p.id %>?asset=<%= currentAsset %>" class="btn-edit" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button onclick="viewDetails(<%= p.id %>)" class="btn-view" title="Detail">
+                <i class="fas fa-eye"></i>
+              </button>
+              <form action="/pengeluaran/delete/<%= p.id %>?asset=<%= currentAsset %>" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?')">
+                <button type="submit" class="btn-delete" title="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  
+  <% if (pengeluaran.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-money-bill-wave"></i>
+      <h3>Belum ada data pengeluaran</h3>
+      <p>Catat pengeluaran pertama Anda menggunakan form di atas</p>
+    </div>
+  <% } %>
+</div>
+
+<!-- Statistik Pengeluaran per Kategori -->
+<div class="stats">
+  <% const expensesByCategory = pengeluaran.reduce((acc, p) => {
+    const cat = p.kategori || 'lainnya';
+    acc[cat] = (acc[cat] || 0) + (p.jumlah * p.harga);
+    return acc;
+  }, {}); %>
+  
+  <% const categories = [
+    { key: 'pakan', label: 'Pakan', icon: 'fa-wheat-awn', color: 'purple' },
+    { key: 'obat', label: 'Obat-obatan', icon: 'fa-pills', color: 'blue' },
+    { key: 'listrik', label: 'Listrik & Air', icon: 'fa-bolt', color: 'yellow' },
+    { key: 'gaji', label: 'Gaji', icon: 'fa-users', color: 'pink' },
+    { key: 'lainnya', label: 'Lainnya', icon: 'fa-ellipsis-h', color: 'gray' }
+  ]; %>
+  
+  <% categories.forEach(cat => { %>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><%= cat.label %></div>
+        <div class="card-icon <%= cat.color %>">
+          <i class="fas <%= cat.icon %>"></i>
+        </div>
+      </div>
+      <div class="card-value">
+        <%= (expensesByCategory[cat.key] || 0).toLocaleString('id-ID') %>
+      </div>
+      <div class="card-change">
+        <%= Math.round((expensesByCategory[cat.key] || 0) / pengeluaran.reduce((total, p) => total + (p.jumlah * p.harga), 0) * 100) || 0 %>%
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Grafik Pengeluaran -->
+<div class="chart-container">
+  <div class="chart-header">
+    <h3 class="chart-title">Tren Pengeluaran</h3>
+    <div class="chart-options">
+      <button class="chart-option active" onclick="updateChart('week')">Minggu</button>
+      <button class="chart-option" onclick="updateChart('month')">Bulan</button>
+      <button class="chart-option" onclick="updateChart('year')">Tahun</button>
+    </div>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="expenseChart"></canvas>
+  </div>
+</div>
+
+<!-- Tombol aksi tambahan -->
+<div class="page-actions">
+  <a href="/export/pengeluaran?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-download"></i> Export Data
+  </a>
+  <a href="/pemasukan?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-dollar-sign"></i> Lihat Pemasukan
+  </a>
+  <a href="/kebutuhan?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-clipboard-list"></i> Kebutuhan
+  </a>
+  <a href="/?asset=<%= currentAsset %>" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+  </a>
+</div>
+
+<script>
+// Helper functions
+function formatDate(dateString) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('id-ID', options);
+}
+
+function getCategoryLabel(category) {
+  const labels = {
+    'pakan': 'Pakan',
+    'obat': 'Obat-obatan',
+    'listrik': 'Listrik & Air',
+    'gaji': 'Gaji',
+    'lainnya': 'Lainnya'
+  };
+  return labels[category] || 'Lainnya';
+}
+
+// Search functionality
+function searchTable() {
+  const input = document.getElementById("searchInput");
+  const filter = input.value.toUpperCase();
+  const table = document.getElementById("pengeluaranTable");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) {
+    const tds = tr[i].getElementsByTagName("td");
+    let found = false;
+    
+    for (let j = 0; j < tds.length; j++) {
+      const td = tds[j];
+      if (td) {
+        const txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          found = true;
+          break;
+        }
+      }
+    }
+    
+    tr[i].style.display = found ? "" : "none";
+  }
+}
+
+// Filter by category
+function filterByCategory() {
+  const category = document.getElementById('filterCategory').value;
+  const rows = document.querySelectorAll('#pengeluaranTable tbody tr');
+  
+  rows.forEach(row => {
+    if (!category) {
+      row.style.display = '';
+    } else {
+      const rowCategory = row.dataset.category;
+      if (rowCategory === category) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  });
+}
+
+// Filter by month
+function filterByMonth() {
+  const month = document.getElementById('filterMonth').value;
+  const rows = document.querySelectorAll('#pengeluaranTable tbody tr');
+  
+  rows.forEach(row => {
+    if (!month) {
+      row.style.display = '';
+    } else {
+      const date = new Date(row.dataset.date);
+      if (date.getMonth() == month) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  });
+}
+
+// Filter by date range
+function filterByDateRange() {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  const rows = document.querySelectorAll('#pengeluaranTable tbody tr');
+  
+  rows.forEach(row => {
+    const rowDate = new Date(row.dataset.date);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    
+    let show = true;
+    if (start && rowDate < start) show = false;
+    if (end && rowDate > end) show = false;
+    
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+// View details
+function viewDetails(id) {
+  alert(`View details for expense ID: ${id}`);
+}
+
+// Print report
+function printReport() {
+  window.print();
+}
+
+// Initialize chart
+document.addEventListener('DOMContentLoaded', function() {
+  // Format tanggal
+  const dateElements = document.querySelectorAll('.date-badge');
+  dateElements.forEach(el => {
+    const dateText = el.textContent.trim();
+    if (dateText && !dateText.includes('<i')) {
+      el.innerHTML = '<i class="fas fa-calendar"></i> ' + formatDate(dateText);
+    }
+  });
+
+  // Initialize expense chart
+  const ctx = document.getElementById('expenseChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+        datasets: [{
+          label: 'Pengeluaran',
+          data: [800000, 1200000, 900000, 1500000, 1100000, 600000, 400000],
+          backgroundColor: 'rgba(239, 68, 68, 0.6)',
+          borderColor: '#ef4444',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return 'Rp ' + value.toLocaleString('id-ID');
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+});
+
+// Update chart based on period
+function updateChart(period) {
+  const options = document.querySelectorAll('.chart-option');
+  options.forEach(opt => opt.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Implement chart update logic here
+}
+</script>
+
+<style>
+/* Tambahan style khusus untuk halaman ini */
+.category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.category-badge.pakan {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: var(--accent-purple);
+}
+
+.category-badge.obat {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--accent-blue);
+}
+
+.category-badge.listrik {
+  background-color: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.category-badge.gaji {
+  background-color: rgba(236, 72, 153, 0.2);
+  color: var(--accent-pink);
+}
+
+.category-badge.lainnya {
+  background-color: rgba(160, 174, 192, 0.2);
+  color: var(--text-secondary);
+}
+
+.expense-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quantity-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: rgba(160, 174, 192, 0.1);
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.total-expense {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.btn-view {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-blue);
+}
+
+.btn-view:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.1);
+}
+
+/* Print styles */
+@media print {
+  .header-actions,
+  .form-add,
+  .filter-section,
+  .table-search,
+  .table-actions,
+  .page-actions,
+  .chart-container {
+    display: none !important;
+  }
+  
+  .container {
+    margin-left: 0 !important;
+    padding: 1rem !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    flex-direction: column;
+  }
+  
+  .filter-group input {
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-add form {
+    flex-direction: column;
+  }
+  
+  .form-add input,
+  .form-add select {
+    width: 100% !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    min-width: 900px;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

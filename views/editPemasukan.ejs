@@ -1,0 +1,31 @@
+
+
+<h1>Edit Pemasukan</h1>
+
+<form action="/pemasukan/edit/<%= pemasukan.id %>?asset=<%= asset %>" method="POST" class="form-edit">
+  <label for="jumlah">Jumlah</label>
+  <input type="number" name="jumlah" id="jumlah" value="<%= pemasukan.jumlah %>" required>
+
+  <label for="harga">Harga per Unit (Rp)</label>
+  <input type="number" name="harga" id="harga" value="<%= pemasukan.harga %>" required>
+
+  <p>Total: Rp <span id="total"><%= pemasukan.total %></span></p>
+
+  <button type="submit">Update Pemasukan</button>
+  <a href="/pemasukan?asset=<%= asset %>">Batal</a>
+</form>
+
+<script>
+const jumlahInput = document.getElementById('jumlah');
+const hargaInput = document.getElementById('harga');
+const totalEl = document.getElementById('total');
+
+function updateTotal() {
+  const jumlah = parseInt(jumlahInput.value) || 0;
+  const harga = parseInt(hargaInput.value) || 0;
+  totalEl.textContent = jumlah * harga;
+}
+
+jumlahInput.addEventListener('input', updateTotal);
+hargaInput.addEventListener('input', updateTotal);
+</script>

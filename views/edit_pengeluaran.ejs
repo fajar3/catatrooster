@@ -1,0 +1,7 @@
+<h2>Edit Pengeluaran</h2>
+<form action="/pengeluaran/edit/<%= item.id %>?asset=<%= currentAsset %>" method="POST">
+  <input type="text" name="nama" value="<%= item.nama %>" required>
+  <input type="number" name="jumlah" value="<%= item.jumlah %>" required>
+  <input type="number" name="harga" value="<%= item.harga %>" required>
+  <button type="submit">Simpan</button>
+</form>
