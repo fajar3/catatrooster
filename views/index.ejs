@@ -1,153 +1,244 @@
+<div class="stats">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Total Minggu Ini</h3>
+            <div class="card-icon purple">
+                <i class="fas fa-calendar-week"></i>
+            </div>
+        </div>
+        <div class="card-value">Rp <%= totalMinggu.toLocaleString() %></div>
+        <div class="card-change positive">+12.5% dari minggu lalu</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Total Bulan Ini</h3>
+            <div class="card-icon blue">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+        <div class="card-value">Rp <%= totalBulan.toLocaleString() %></div>
+        <div class="card-change positive">+8.2% dari bulan lalu</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Total Semua Pengeluaran</h3>
+            <div class="card-icon pink">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+        </div>
+        <div class="card-value">Rp <%= totalAll.toLocaleString() %></div>
+        <div class="card-change negative">+3.1% dari periode lalu</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Total Pemasukan</h3>
+            <div class="card-icon purple">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+        <div class="card-value">Rp <%= totalPemasukan.toLocaleString() %></div>
+        <div class="card-change positive">+15.3% dari bulan lalu</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Sisa Keuangan Asset</h3>
+            <div class="card-icon blue">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
+        <div class="card-value">Rp <%= totalKeuangan.toLocaleString() %></div>
+        <div class="card-change positive">+10.7% dari bulan lalu</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Total Asset</h3>
+            <div class="card-icon pink">
+                <i class="fas fa-egg"></i>
+            </div>
+        </div>
+        <div class="card-value"><%= totalAyam %></div>
+        <div class="card-change positive">+5.2% dari bulan lalu</div>
+    </div>
+</div>
 
-    <div class="stats">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Total Minggu Ini</h3>
-                <div class="card-icon purple">
-                    <i class="fas fa-calendar-week"></i>
-                </div>
-            </div>
-            <div class="card-value">Rp <%= totalMinggu.toLocaleString() %></div>
-            <div class="card-change positive">+12.5% dari minggu lalu</div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Total Bulan Ini</h3>
-                <div class="card-icon blue">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-            </div>
-            <div class="card-value">Rp <%= totalBulan.toLocaleString() %></div>
-            <div class="card-change positive">+8.2% dari bulan lalu</div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Total Semua Pengeluaran</h3>
-                <div class="card-icon pink">
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-            </div>
-            <div class="card-value">Rp <%= totalAll.toLocaleString() %></div>
-            <div class="card-change negative">+3.1% dari periode lalu</div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Total Pemasukan</h3>
-                <div class="card-icon purple">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-            </div>
-            <div class="card-value">Rp <%= totalPemasukan.toLocaleString() %></div>
-            <div class="card-change positive">+15.3% dari bulan lalu</div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Sisa Keuangan Asset</h3>
-                <div class="card-icon blue">
-                    <i class="fas fa-wallet"></i>
-                </div>
-            </div>
-            <div class="card-value">Rp <%= totalKeuangan.toLocaleString() %></div>
-            <div class="card-change positive">+10.7% dari bulan lalu</div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Total Asset</h3>
-                <div class="card-icon pink">
-                    <i class="fas fa-egg"></i>
-                </div>
-            </div>
-            <div class="card-value"><%= totalAyam %></div>
-            <div class="card-change positive">+5.2% dari bulan lalu</div>
+<div class="chart-container">
+    <div class="chart-header">
+        <h2 class="chart-title">Grafik Pengeluaran</h2>
+        <div class="chart-options">
+            <div class="chart-option active">Mingguan</div>
+            <div class="chart-option">Bulanan</div>
+            <div class="chart-option">Tahunan</div>
         </div>
     </div>
+    <div class="chart-wrapper">
+        <canvas id="chartPengeluaran"></canvas>
+    </div>
+</div>
 
-    <div class="chart-container">
-        <div class="chart-header">
-            <h2 class="chart-title">Grafik Pengeluaran</h2>
-            <div class="chart-options">
-                <div class="chart-option active">Mingguan</div>
-                <div class="chart-option">Bulanan</div>
-                <div class="chart-option">Tahunan</div>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="chartPengeluaran"></canvas>
+<div class="table-container">
+    <div class="table-header">
+        <h2 class="table-title">Riwayat Pengeluaran</h2>
+        <div class="table-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari pengeluaran...">
         </div>
     </div>
-
-    <div class="table-container">
-        <div class="table-header">
-            <h2 class="table-title">Riwayat Pengeluaran</h2>
-            <div class="table-search">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Cari pengeluaran...">
-            </div>
-        </div>
-        <table>
-            <thead>
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Jumlah</th>
+                <th>Harga</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <% pengeluaran.forEach(item => { %>
                 <tr>
-                    <th>Tanggal</th>
-                    <th>Nama</th>
-                    <th>Jumlah</th>
-                    <th>Harga</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
+                    <td><%= item.tanggal %></td>
+                    <td><%= item.nama %></td>
+                    <td><%= item.jumlah %></td>
+                    <td>Rp <%= item.harga.toLocaleString() %></td>
+                    <td><span class="status active">Selesai</span></td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="/pengeluaran?asset=<%= currentAsset %>" title="Lihat Detail">
+                                <button class="action-btn view">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </a>
+                            <a href="/pengeluaran/edit/<%= item.id %>?asset=<%= currentAsset %>" title="Edit">
+                                <button class="action-btn edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </a>
+                            <form method="POST" action="/pengeluaran/delete/<%= item.id %>?asset=<%= currentAsset %>" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                <button type="submit" class="action-btn delete" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <% pengeluaran.forEach(item => { %>
-                    <tr>
-                        <td><%= item.tanggal %></td>
-                        <td><%= item.nama %></td>
-                        <td><%= item.jumlah %></td>
-                        <td>Rp <%= item.harga.toLocaleString() %></td>
-                        <td><span class="status active">Selesai</span></td>
-                        <td>
-                            <div class="table-actions">
-                                <button><i class="fas fa-eye"></i></button>
-                                <button><i class="fas fa-edit"></i></button>
-                                <button><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-        
-        <div class="pagination">
-            <% if (page > 1) { %><a href="/?page=<%= page - 1 %>" class="btn">Prev</a><% } %>
+            <% }) %>
+        </tbody>
+    </table>
+    
+    <div class="pagination">
+        <% if (page > 1) { %>
+            <a href="/?page=<%= page - 1 %>&asset=<%= currentAsset %>" class="btn">Prev</a>
+        <% } %>
 
-            <% 
-            const maxButtons = 3;
-            let start = Math.max(1, page - 1);
-            let end = Math.min(totalPages, start + maxButtons - 1);
-            if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
-            %>
+        <% 
+        const maxButtons = 3;
+        let start = Math.max(1, page - 1);
+        let end = Math.min(totalPages, start + maxButtons - 1);
+        if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+        %>
 
-            <% if (start > 1) { %><a href="/?page=1" class="btn">1</a><% if (start > 2) { %><span class="btn">...</span><% } %><% } %>
+        <% if (start > 1) { %>
+            <a href="/?page=1&asset=<%= currentAsset %>" class="btn">1</a>
+            <% if (start > 2) { %><span class="btn">...</span><% } %>
+        <% } %>
 
-            <% for (let i = start; i <= end; i++) { %>
-                <% if (i === page) { %><span class="btn active"><%= i %></span><% } else { %>
-                    <a href="/?page=<%= i %>" class="btn"><%= i %></a>
-                <% } %>
+        <% for (let i = start; i <= end; i++) { %>
+            <% if (i === page) { %>
+                <span class="btn active"><%= i %></span>
+            <% } else { %>
+                <a href="/?page=<%= i %>&asset=<%= currentAsset %>" class="btn"><%= i %></a>
             <% } %>
+        <% } %>
 
-            <% if (end < totalPages) { %><% if (end < totalPages - 1) { %><span class="btn">...</span><% } %><a href="/?page=<%= totalPages %>" class="btn"><%= totalPages %></a><% } %>
+        <% if (end < totalPages) { %>
+            <% if (end < totalPages - 1) { %><span class="btn">...</span><% } %>
+            <a href="/?page=<%= totalPages %>&asset=<%= currentAsset %>" class="btn"><%= totalPages %></a>
+        <% } %>
 
-            <% if (page < totalPages) { %><a href="/?page=<%= page + 1 %>" class="btn">Next</a><% } %>
-        </div>
+        <% if (page < totalPages) { %>
+            <a href="/?page=<%= page + 1 %>&asset=<%= currentAsset %>" class="btn">Next</a>
+        <% } %>
     </div>
+</div>
 
+<style>
+    .action-btn {
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+    .action-btn.view {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .action-btn.view:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .action-btn.edit {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .action-btn.edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+    }
+
+    .action-btn.delete {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+
+    .action-btn.delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(250, 112, 154, 0.4);
+    }
+
+    .table-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .table-actions form {
+        margin: 0;
+    }
+</style>
 
 <script>
     // Mobile menu toggle
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const sidebar = document.getElementById('sidebar');
     
-    mobileMenuToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-    });
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    }
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.getElementById('tableBody');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            Array.from(rows).forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
 
     // Chart
     const ctx = document.getElementById('chartPengeluaran').getContext('2d');

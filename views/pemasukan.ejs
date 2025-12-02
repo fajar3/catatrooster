@@ -65,9 +65,6 @@
   <table id="pemasukanTable">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Tanggal</th>
-        <th>Pembeli</th>
         <th>Jumlah</th>
         <th>Harga/Ekor</th>
         <th>Total</th>
@@ -76,9 +73,7 @@
     </thead>
     <tbody>
       <% pemasukan.forEach(p => { %>
-          <td>
-            <%= p.pembeli ? `<span class="buyer-name">${p.pembeli}</span>` : '<span class="no-buyer">-</span>' %>
-          </td>
+         
           <td>
             <span class="badge badge-success">
               <i class="fas fa-egg"></i> <%= p.jumlah %> ekor

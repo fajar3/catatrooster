@@ -35,14 +35,61 @@
   <!-- Sidebar for desktop -->
   <aside class="sidebar" id="sidebar">
     <ul class="sidebar-menu">
-      <li><a href="/?asset=<%= currentAsset %>" class="<%= currentPath === '/' ? 'active' : '' %>"><i class="fas fa-home"></i> Dashboard</a></li>
-      <li><a href="/add?asset=<%= currentAsset %>" class="<%= currentPath === '/add' ? 'active' : '' %>"><i class="fas fa-plus-circle"></i> Tambah</a></li>
-      <li><a href="/kebutuhan?asset=<%= currentAsset %>" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>"><i class="fas fa-clipboard-list"></i> Kebutuhan</a></li>
-      <li><a href="/ayam?asset=<%= currentAsset %>" class="<%= currentPath === '/ayam' ? 'active' : '' %>"><i class="fas fa-egg"></i> Ayam</a></li>
-      <li><a href="/pemasukan?asset=<%= currentAsset %>" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>"><i class="fas fa-dollar-sign"></i> Pemasukan</a></li>
-      <li><a href="/pengeluaran?asset=<%= currentAsset %>" class="<%= currentPath === '/pengeluaran' ? 'active' : '' %>"><i class="fas fa-money-bill-wave"></i> Pengeluaran</a></li>
-      <li><a href="/assets?asset=<%= currentAsset %>" class="<%= currentPath === '/assets' ? 'active' : '' %>"><i class="fas fa-folder"></i> Assets</a></li>
-      <li><a href="/export?asset=<%= currentAsset %>" class="export-btn"><i class="fas fa-download"></i> Export JSON</a></li>
+      <li>
+        <a href="/?asset=<%= currentAsset %>" class="<%= currentPath === '/' ? 'active' : '' %>">
+          <i class="fas fa-home"></i> 
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="/add?asset=<%= currentAsset %>" class="<%= currentPath === '/add' ? 'active' : '' %>">
+          <i class="fas fa-plus-circle"></i> 
+          <span>Tambah</span>
+        </a>
+      </li>
+      <li>
+        <a href="/kebutuhan?asset=<%= currentAsset %>" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>">
+          <i class="fas fa-clipboard-list"></i> 
+          <span>Kebutuhan</span>
+        </a>
+      </li>
+      <li>
+        <a href="/ayam?asset=<%= currentAsset %>" class="<%= currentPath === '/ayam' ? 'active' : '' %>">
+          <i class="fas fa-egg"></i> 
+          <span>Ayam</span>
+        </a>
+      </li>
+      <li>
+        <a href="/pemasukan?asset=<%= currentAsset %>" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>">
+          <i class="fas fa-dollar-sign"></i> 
+          <span>Pemasukan</span>
+        </a>
+      </li>
+      <li>
+        <a href="/pengeluaran?asset=<%= currentAsset %>" class="<%= currentPath === '/pengeluaran' ? 'active' : '' %>">
+          <i class="fas fa-money-bill-wave"></i> 
+          <span>Pengeluaran</span>
+        </a>
+      </li>
+      
+      <!-- Divider -->
+      <li class="menu-divider"></li>
+      
+      <li>
+        <a href="/assets?asset=<%= currentAsset %>" class="<%= currentPath === '/assets' ? 'active' : '' %>">
+          <i class="fas fa-folder"></i> 
+          <span>Assets</span>
+        </a>
+      </li>
+      <li>
+        <a href="/backup?asset=<%= currentAsset %>"
+   class="<%= currentPath.startsWith('/backup') ? 'active' : '' %>">
+    <i class="fas fa-database"></i>
+    <span>Backup & Restore</span>
+</a>
+
+      </li>
+      
     </ul>
   </aside>
 
@@ -54,20 +101,145 @@
   <nav class="bottom-nav">
     <a href="/?asset=<%= currentAsset %>" class="<%= currentPath === '/' ? 'active' : '' %>" aria-label="Dashboard">
       <i class="fas fa-home"></i>
+      <span>Home</span>
     </a>
     <a href="/add?asset=<%= currentAsset %>" class="<%= currentPath === '/add' ? 'active' : '' %>" aria-label="Add">
       <i class="fas fa-plus-circle"></i>
+      <span>Tambah</span>
     </a>
     <a href="/kebutuhan?asset=<%= currentAsset %>" class="<%= currentPath === '/kebutuhan' ? 'active' : '' %>" aria-label="Requirements">
       <i class="fas fa-clipboard-list"></i>
+      <span>Kebutuhan</span>
     </a>
-    <a href="/ayam?asset=<%= currentAsset %>" class="<%= currentPath === '/ayam' ? 'active' : '' %>" aria-label="Chickens">
-      <i class="fas fa-egg"></i>
+    <a href="/backup?asset=<%= currentAsset %>" class="<%= currentPath === '/backup' ? 'active' : '' %>" aria-label="Backup">
+      <i class="fas fa-database"></i>
+      <span>Backup</span>
     </a>
-    <a href="/pemasukan?asset=<%= currentAsset %>" class="<%= currentPath === '/pemasukan' ? 'active' : '' %>" aria-label="Income">
-      <i class="fas fa-dollar-sign"></i>
+    <a href="/assets?asset=<%= currentAsset %>" class="<%= currentPath === '/assets' ? 'active' : '' %>" aria-label="Assets">
+      <i class="fas fa-folder"></i>
+      <span>Assets</span>
     </a>
   </nav>
+
+  <style>
+    /* Menu Divider */
+    .menu-divider {
+      height: 1px;
+      background: rgba(139, 92, 246, 0.2);
+      margin: 15px 10px;
+      list-style: none;
+    }
+
+    /* Update sidebar links to show text */
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      color: #a0aec0;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .sidebar-menu a i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-menu a span {
+      flex: 1;
+    }
+
+    .sidebar-menu a:hover {
+      background: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6;
+      transform: translateX(5px);
+    }
+
+    .sidebar-menu a.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .sidebar-menu a.export-btn {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      font-weight: 600;
+    }
+
+    .sidebar-menu a.export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+    }
+
+    /* Bottom nav improvements */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(139, 92, 246, 0.2);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 100;
+    }
+
+    .bottom-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      color: #a0aec0;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+
+    .bottom-nav a i {
+      font-size: 20px;
+    }
+
+    .bottom-nav a span {
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .bottom-nav a:hover {
+      color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .bottom-nav a.active {
+      color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.2);
+    }
+
+    /* Hide bottom nav on desktop */
+    @media (min-width: 1025px) {
+      .bottom-nav {
+        display: none;
+      }
+    }
+
+    /* Show bottom nav on mobile */
+    @media (max-width: 1024px) {
+      .bottom-nav {
+        display: flex;
+      }
+      
+      main.container {
+        padding-bottom: 80px; /* Space for bottom nav */
+      }
+    }
+  </style>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
